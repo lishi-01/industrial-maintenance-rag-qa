@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+
+# Data
+data/raw_docs/*
+data/parsed/*
+data/chunks/*
+data/eval/*
+data/samples/*
+
+# Keep folders
+!data/raw_docs/.gitkeep
+!data/parsed/.gitkeep
+!data/chunks/.gitkeep
+!data/eval/.gitkeep
+!data/samples/.gitkeep
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Model files
+models/
+checkpoints/
