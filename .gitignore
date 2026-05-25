@@ -35,3 +35,6 @@ logs/
 # Model files
 models/
 checkpoints/
+
+# Docker runtime data
+volumes/
