@@ -1,0 +1,21 @@
+milvus:
+  host: localhost
+  port: 19530
+  collection_name: industrial_maintenance_chunks
+
+schema:
+  vector_dim: 1024
+  text_max_length: 8192
+  source_file_max_length: 256
+  chunk_id_max_length: 128
+
+index:
+  metric_type: COSINE
+  index_type: HNSW
+  params:
+    M: 16
+    efConstruction: 200
+
+search:
+  params:
+    ef: 64

@@ -1,0 +1,16 @@
+embedding:
+  model_name: BAAI/bge-m3
+  device: cpu
+  batch_size: 16
+
+reranker:
+  model_name: BAAI/bge-reranker-v2-m3
+  device: cpu
+  use_fp16: false
+
+llm:
+  model_name: Qwen/Qwen2.5-1.5B-Instruct
+  device: auto
+  temperature: 0.1
+  top_p: 0.9
+  max_new_tokens: 1024

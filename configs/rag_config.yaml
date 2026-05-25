@@ -1,0 +1,47 @@
+project:
+  name: industrial-maintenance-rag-qa
+  language: zh_en
+
+document:
+  raw_dir: data/raw_docs
+  parsed_path: data/parsed/documents.jsonl
+  chunks_path: data/chunks/chunks.jsonl
+  chunk_size: 600
+  chunk_overlap: 100
+
+embedding:
+  model_name: BAAI/bge-m3
+  device: cpu
+  batch_size: 16
+
+milvus:
+  host: localhost
+  port: 19530
+  collection_name: industrial_maintenance_chunks
+  metric_type: COSINE
+  index_type: HNSW
+
+retrieval:
+  dense_top_k: 20
+  bm25_top_k: 20
+  fusion_method: rrf
+  rerank_top_k: 30
+  final_top_n: 5
+  enable_bm25: true
+  enable_reranker: true
+
+reranker:
+  model_name: BAAI/bge-reranker-v2-m3
+  device: cpu
+
+llm:
+  backend: local_qwen
+  model_name: Qwen/Qwen2.5-1.5B-Instruct
+  temperature: 0.1
+  top_p: 0.9
+  max_new_tokens: 1024
+
+server:
+  api_host: 0.0.0.0
+  api_port: 8000
+  gradio_port: 7860
