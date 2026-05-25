@@ -13,10 +13,7 @@ def main():
     parser.add_argument("--top_k", type=int, default=5)
     args = parser.parse_args()
 
-    rag = IndustrialRAGChain(
-        llm_model_name="Qwen/Qwen2.5-1.5B-Instruct",
-        device="cpu"
-    )
+    rag = IndustrialRAGChain()
 
     result = rag.query(
         question=args.question,
