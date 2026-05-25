@@ -40,3 +40,6 @@ checkpoints/
 volumes/
 docs/resume_description.md
 docs/resume_description.md
+
+# Pytest
+.pytest_cache/
