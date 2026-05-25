@@ -4,12 +4,9 @@ from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+from src.config import load_rag_config, get_config_value
 from src.embedder import BGEEmbedder
 from src.milvus_store import MilvusStore
-
-
-CHUNKS_PATH = Path("data/chunks/chunks.jsonl")
-COLLECTION_NAME = "industrial_maintenance_chunks"
 
 
 def load_chunks(path: Path):
@@ -22,30 +19,45 @@ def load_chunks(path: Path):
 
 
 def main():
-    if not CHUNKS_PATH.exists():
-        raise FileNotFoundError(f"Chunks file not found: {CHUNKS_PATH}")
+    config = load_rag_config()
 
-    chunks = load_chunks(CHUNKS_PATH)
+    chunks_path = Path(get_config_value(config, "document.chunks_path", "data/chunks/chunks.jsonl"))
+
+    embedding_model = get_config_value(config, "embedding.model_name", "BAAI/bge-m3")
+    embedding_device = get_config_value(config, "embedding.device", "cpu")
+    embedding_batch_size = int(get_config_value(config, "embedding.batch_size", 16))
+
+    milvus_host = get_config_value(config, "milvus.host", "localhost")
+    milvus_port = str(get_config_value(config, "milvus.port", "19530"))
+    collection_name = get_config_value(config, "milvus.collection_name", "industrial_maintenance_chunks")
+
+    if not chunks_path.exists():
+        raise FileNotFoundError(f"Chunks file not found: {chunks_path}")
+
+    chunks = load_chunks(chunks_path)
     print(f"Loaded chunks: {len(chunks)}")
+    print(f"Embedding model: {embedding_model}")
+    print(f"Embedding device: {embedding_device}")
+    print(f"Milvus collection: {collection_name}")
 
     texts = [c["text"] for c in chunks]
 
     embedder = BGEEmbedder(
-        model_name="BAAI/bge-m3",
-        device="cpu"
+        model_name=embedding_model,
+        device=embedding_device
     )
 
     embeddings = embedder.encode(
         texts,
-        batch_size=16,
+        batch_size=embedding_batch_size
     )
 
     print(f"Embedding shape: {embeddings.shape}")
 
     store = MilvusStore(
-        host="localhost",
-        port="19530",
-        collection_name=COLLECTION_NAME,
+        host=milvus_host,
+        port=milvus_port,
+        collection_name=collection_name,
         dim=embeddings.shape[1],
     )
 
@@ -53,7 +65,7 @@ def main():
     num_entities = store.insert_chunks(chunks, embeddings)
 
     print(f"Inserted entities: {num_entities}")
-    print(f"Milvus collection: {COLLECTION_NAME}")
+    print(f"Milvus collection: {collection_name}")
 
 
 if __name__ == "__main__":
