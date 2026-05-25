@@ -28,3 +28,20 @@ The current retrieval pipeline uses BGE-M3 dense retrieval, BM25 sparse retrieva
 
 The answer generation module uses retrieved and reranked evidence chunks as context. The prompt constrains the local Qwen model to cite only provided source files, page numbers, and chunk IDs.
 
+
+## 14. Makefile Commands
+
+Common project commands are wrapped in `Makefile` for easier reproduction.
+
+```bash
+make docker-up        # Start Milvus standalone
+make parse            # Parse PDF documents
+make chunk            # Build text chunks
+make index            # Build Milvus vector index
+make retrieve         # Test hybrid retrieval + reranker
+make rag              # Test full RAG QA
+make api              # Start FastAPI service
+make gradio           # Start Gradio demo
+make eval-retrieval   # Run retrieval evaluation
+make eval-answer      # Run answer generation evaluation
+make test             # Run unit tests
