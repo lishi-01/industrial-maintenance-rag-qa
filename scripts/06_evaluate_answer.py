@@ -70,10 +70,7 @@ def main():
             if line.strip():
                 eval_items.append(json.loads(line))
 
-    rag = IndustrialRAGChain(
-        llm_model_name="Qwen/Qwen2.5-1.5B-Instruct",
-        device="cpu"
-    )
+    rag = IndustrialRAGChain()
 
     results = []
 
