@@ -44,10 +44,7 @@ def get_rag_chain():
     global rag_chain
 
     if rag_chain is None:
-        rag_chain = IndustrialRAGChain(
-            llm_model_name="Qwen/Qwen2.5-1.5B-Instruct",
-            device="cpu"
-        )
+        rag_chain = IndustrialRAGChain()
 
     return rag_chain
 
