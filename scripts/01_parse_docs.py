@@ -5,25 +5,27 @@ from tqdm import tqdm
 import sys
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+from src.config import load_rag_config, get_config_value
 from src.pdf_parser import parse_pdf
 
 
-RAW_DIR = Path("data/raw_docs")
-OUT_PATH = Path("data/parsed/documents.jsonl")
-
-
 def main():
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    config = load_rag_config()
 
-    pdf_files = sorted(RAW_DIR.glob("*.pdf"))
+    raw_dir = Path(get_config_value(config, "document.raw_dir", "data/raw_docs"))
+    out_path = Path(get_config_value(config, "document.parsed_path", "data/parsed/documents.jsonl"))
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    pdf_files = sorted(raw_dir.glob("*.pdf"))
 
     if not pdf_files:
-        raise FileNotFoundError(f"No PDF files found in {RAW_DIR}")
+        raise FileNotFoundError(f"No PDF files found in {raw_dir}")
 
     total_pages = 0
     scanned_pages = 0
 
-    with OUT_PATH.open("w", encoding="utf-8") as f:
+    with out_path.open("w", encoding="utf-8") as f:
         for pdf_path in tqdm(pdf_files, desc="Parsing PDFs"):
             records = parse_pdf(pdf_path)
 
@@ -37,7 +39,7 @@ def main():
     print(f"Parsed PDF files: {len(pdf_files)}")
     print(f"Total pages: {total_pages}")
     print(f"Possible scanned/empty pages: {scanned_pages}")
-    print(f"Output saved to: {OUT_PATH}")
+    print(f"Output saved to: {out_path}")
 
 
 if __name__ == "__main__":

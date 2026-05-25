@@ -5,27 +5,28 @@ from tqdm import tqdm
 import sys
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+from src.config import load_rag_config, get_config_value
 from src.chunker import build_chunks_from_page
 
 
-IN_PATH = Path("data/parsed/documents.jsonl")
-OUT_PATH = Path("data/chunks/chunks.jsonl")
-
-CHUNK_SIZE = 600
-CHUNK_OVERLAP = 100
-
-
 def main():
-    if not IN_PATH.exists():
-        raise FileNotFoundError(f"Input file not found: {IN_PATH}")
+    config = load_rag_config()
 
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    in_path = Path(get_config_value(config, "document.parsed_path", "data/parsed/documents.jsonl"))
+    out_path = Path(get_config_value(config, "document.chunks_path", "data/chunks/chunks.jsonl"))
+    chunk_size = int(get_config_value(config, "document.chunk_size", 600))
+    chunk_overlap = int(get_config_value(config, "document.chunk_overlap", 100))
+
+    if not in_path.exists():
+        raise FileNotFoundError(f"Input file not found: {in_path}")
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
 
     total_pages = 0
     total_chunks = 0
     skipped_pages = 0
 
-    with IN_PATH.open("r", encoding="utf-8") as fin, OUT_PATH.open("w", encoding="utf-8") as fout:
+    with in_path.open("r", encoding="utf-8") as fin, out_path.open("w", encoding="utf-8") as fout:
         for line in tqdm(fin, desc="Building chunks"):
             total_pages += 1
             record = json.loads(line)
@@ -36,8 +37,8 @@ def main():
 
             chunks = build_chunks_from_page(
                 record,
-                chunk_size=CHUNK_SIZE,
-                chunk_overlap=CHUNK_OVERLAP
+                chunk_size=chunk_size,
+                chunk_overlap=chunk_overlap
             )
 
             for chunk in chunks:
@@ -47,7 +48,9 @@ def main():
     print(f"Input pages: {total_pages}")
     print(f"Skipped empty pages: {skipped_pages}")
     print(f"Output chunks: {total_chunks}")
-    print(f"Output saved to: {OUT_PATH}")
+    print(f"Chunk size: {chunk_size}")
+    print(f"Chunk overlap: {chunk_overlap}")
+    print(f"Output saved to: {out_path}")
 
 
 if __name__ == "__main__":
