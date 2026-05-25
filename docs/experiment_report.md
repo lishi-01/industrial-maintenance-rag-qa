@@ -34,3 +34,20 @@ The current MVP pipeline includes:
 - Gradio demo interface
 - Source citation with file name, page number, chunk ID, and reranker score
 
+
+## 3. Answer Generation Evaluation
+
+We evaluated the evidence-grounded answer generation module on 5 bearing maintenance QA samples.
+
+### Metrics
+
+| Metric | Score |
+|---|---:|
+| Answer Coverage | 0.9333 |
+| Citation Presence Rate | 1.0000 |
+| Hallucination Flag Rate | 0.0000 |
+
+### Interpretation
+
+After prompt refinement, the answer generation module achieved high answer coverage and complete citation presence. The hallucination flag rate decreased to 0.0000, indicating that the model responses were better constrained by retrieved evidence and no longer fabricated external URLs or unsupported references.
+

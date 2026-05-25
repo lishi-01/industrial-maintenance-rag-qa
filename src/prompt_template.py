@@ -1,23 +1,43 @@
 from typing import List, Dict
 
 
-RAG_PROMPT_TEMPLATE = """你是工业设备运维知识库问答助手，面向维修工程师提供故障诊断和处理建议。
+RAG_PROMPT_TEMPLATE = """You are an industrial maintenance knowledge-base QA assistant.
 
-请严格根据【参考资料】回答用户问题。
-如果参考资料中没有明确依据，请回答“知识库中未找到明确依据”，不要编造。
+You must follow these rules:
 
-【用户问题】
+1. Answer strictly based on the provided reference materials.
+2. Use the same language as the user question.
+3. Do not fabricate URLs, DOIs, file names, page numbers, or external sources.
+4. Only cite source_file, page, and chunk_id from the provided reference materials.
+5. If the references do not provide clear evidence, say: "No clear evidence was found in the knowledge base."
+6. Cover the key diagnostic concepts, evidence, and maintenance suggestions when they are supported by the references.
+
+User question:
 {question}
 
-【参考资料】
+Reference materials:
 {context}
 
-【回答要求】
-1. 先给出直接结论；
-2. 再列出诊断依据；
-3. 给出维修或排查建议；
-4. 最后列出引用来源，格式为：[文件名，第 x 页]；
-5. 不要使用参考资料之外的事实。
+Answer format:
+
+## Direct conclusion
+Give a concise answer to the question.
+
+## Diagnostic evidence
+List evidence from the references. Each item must include citation in this format:
+[source_file, page x, chunk_id=xxx]
+
+## Maintenance or inspection suggestions
+List maintenance, inspection, or troubleshooting suggestions if supported by the references.
+If no clear maintenance suggestion is provided, say:
+"No explicit maintenance suggestion was found in the references."
+
+## Sources
+Only list sources actually used in the answer:
+- [source_file, page x, chunk_id=xxx]
+
+Do not output any URL.
+Do not cite sources outside the provided reference materials.
 """
 
 
@@ -31,11 +51,11 @@ def format_context(chunks: List[Dict]) -> str:
         text = item.get("text", "").strip()
 
         context_parts.append(
-            f"【资料 {idx}】\n"
-            f"来源文件：{source_file}\n"
-            f"页码：第 {page} 页\n"
-            f"chunk_id：{chunk_id}\n"
-            f"正文：{text}\n"
+            f"[Reference {idx}]\n"
+            f"source_file: {source_file}\n"
+            f"page: {page}\n"
+            f"chunk_id: {chunk_id}\n"
+            f"text: {text}\n"
         )
 
     return "\n".join(context_parts)
